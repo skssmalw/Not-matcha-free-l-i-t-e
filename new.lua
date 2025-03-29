@@ -1,7 +1,7 @@
 local ReGui = loadstring(game:HttpGet('https://raw.githubusercontent.com/depthso/Dear-ReGui/refs/heads/main/ReGui.lua'))()
 local PrefabsId = `rbxassetid://{ReGui.PrefabsId}`
 local Smoothnessvalue = Instance.new("IntValue")
-Smoothnessvalue.Parent = script.Parent.Parent
+Smoothnessvalue.Parent = game:GetService("Players").LocalPlayer
 Smoothnessvalue.Name = "VerySmoothSigma"
 
 
@@ -88,9 +88,9 @@ end
 
 local aimpartvalue = Instance.new("StringValue")
 aimpartvalue.Name = "AimPartValue"
-aimpartvalue.Parent = script.Parent.Parent
+aimpartvalue.Parent = game:GetService("Players").LocalPlayer
 local keybindvalue = Instance.new("StringValue")
-keybindvalue.Parent = script.Parent.Parent
+keybindvalue.Parent = game:GetService("Players").LocalPlayer
 keybindvalue.Name = "savedkey"
 
 
@@ -242,11 +242,11 @@ local ESPSection = CreateRegion(General, "ESP")
 		Callback = function(self, Value)
 			-- Destroy UI when disabled
 			if Value == false then
-				if script.Parent:FindFirstChild("verysigma") then
-					script.Parent:FindFirstChild("verysigma"):Destroy()
+			if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("verysigma") then 
+				game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("verysigma"):Destroy()
 				end
-				if script.Parent:FindFirstChild("dafo") then
-					script.Parent:FindFirstChild("dafo"):Destroy()
+			if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("dafo") then
+				game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("dafo"):Destroy()
 				end
 				return
 			end
@@ -509,9 +509,10 @@ KeyBinds:Keybind({
 		Label = "Lock bind",
 		Value = Enum.KeyCode.Q,
 		OnKeybindSet = function(self, KeyId)
-		script.Parent.Parent:WaitForChild("savedkey").Value = tostring(KeyId)
+		game:GetService("Players").LocalPlayer:WaitForChild("savedkey").Value = tostring(KeyId)
 		end
 	})
 
 
 --script.Parent.Parent:WaitForChild("savedkey").Value = tostring(KeyId)
+
