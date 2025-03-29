@@ -1,5 +1,5 @@
 local ReGui = loadstring(game:HttpGet('https://raw.githubusercontent.com/depthso/Dear-ReGui/refs/heads/main/ReGui.lua'))()
-local PrefabsId = `rbxassetid://{ReGui.PrefabsId}`
+local PrefabsId = "rbxassetid://134901000264294"
 
 
 
@@ -495,4 +495,3 @@ KeyBinds:Keybind({
 	})
 
 
---script.Parent.Parent:WaitForChild("savedkey").Value = tostring(KeyId)
