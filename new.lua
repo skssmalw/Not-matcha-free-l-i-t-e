@@ -1,6 +1,8 @@
 local ReGui = loadstring(game:HttpGet('https://raw.githubusercontent.com/depthso/Dear-ReGui/refs/heads/main/ReGui.lua'))()
-local PrefabsId = "rbxassetid://134901000264294"
-
+local PrefabsId = `rbxassetid://{ReGui.PrefabsId}`
+local Smoothnessvalue = Instance.new("IntValue")
+Smoothnessvalue.Parent = script.Parent.Parent
+Smoothnessvalue.Name = "VerySmoothSigma"
 
 
 local player = game.Players.LocalPlayer
@@ -344,16 +346,21 @@ local ESPSection = CreateRegion(General, "ESP")
 				end
 			end)
 
-			RunService.RenderStepped:Connect(function()
-				if aimLockEnabled and targetPlayer then
-					local targetPart = getClosestPlayer() and getClosestPlayer():FindFirstChild(aimpart)
-					if targetPart then
-						local targetPosition = targetPart.Position
-						local targetCFrame = CFrame.new(camera.CFrame.Position, targetPosition)
-						camera.CFrame = camera.CFrame:Lerp(targetCFrame, 0.2) -- Smooth movement
-					end
+		
+		local smoothnessValue = Smoothnessvalue.Value
+		local smoothFactor = math.clamp(smoothnessValue / 100, 0.01, 1)
+
+		RunService.RenderStepped:Connect(function()
+			if aimLockEnabled and targetPlayer then
+				local targetPart = getClosestPlayer() and getClosestPlayer():FindFirstChild(aimpart)
+				if targetPart then
+					local targetPosition = targetPart.Position
+					local targetCFrame = CFrame.new(camera.CFrame.Position, targetPosition)
+					camera.CFrame = camera.CFrame:Lerp(targetCFrame, smoothFactor) 
 				end
-			end)
+			end
+		end)
+
 
 			-- Create mobile button
 			if not player.PlayerGui:FindFirstChild("verysigma") then
@@ -405,6 +412,18 @@ AimbotSection:Combo({
 	end,
 })
 
+AimbotSection:SliderFloat({
+	Label = "Smoothness",
+	Minimum = 100, 
+	Maximum = 1,
+	Value = 50,
+	Format = "%.3f",
+	Callback = function(self, Value)
+		Smoothnessvalue.Value = Value
+		print(Value)
+	end,
+
+})
 
 
 
@@ -495,3 +514,4 @@ KeyBinds:Keybind({
 	})
 
 
+--script.Parent.Parent:WaitForChild("savedkey").Value = tostring(KeyId)
