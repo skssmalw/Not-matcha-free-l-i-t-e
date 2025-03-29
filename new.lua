@@ -303,18 +303,21 @@ local ESPSection = CreateRegion(General, "ESP")
 			end)
 
 			-- Function to get the closest player
-			local function getClosestPlayer()
-				local closestTarget = nil
-				local shortestDistance = aimRadius
+		local function getClosestPlayer()
+			local closestTarget = nil
+			local shortestDistance = aimRadius
 
-				for _, v in pairs(workspace:GetChildren()) do
-					if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v ~= player.Character then
-						local part = v:FindFirstChild(aimpart)
-						if part then
-							local screenPoint, onScreen = camera:WorldToViewportPoint(part.Position)
-							if onScreen then
-								local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(screenPoint.X, screenPoint.Y)).Magnitude
-								if distance < shortestDistance then
+			for _, v in pairs(workspace:GetChildren()) do
+				if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v ~= player.Character then
+					local part = v:FindFirstChild(aimpart)
+					if part then
+						local screenPoint, onScreen = camera:WorldToViewportPoint(part.Position)
+						if onScreen then
+							local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(screenPoint.X, screenPoint.Y)).Magnitude
+							if distance < shortestDistance then
+								-- Check if the player is in the FOV (field of view)
+								local viewAngle = math.acos(camera.CFrame.LookVector:Dot((part.Position - camera.CFrame.Position).unit))
+								if math.deg(viewAngle) < 60 then  -- Adjust the FOV angle as needed (e.g., 60 degrees)
 									closestTarget = v
 									shortestDistance = distance
 								end
@@ -322,21 +325,22 @@ local ESPSection = CreateRegion(General, "ESP")
 						end
 					end
 				end
-
-				return closestTarget
 			end
 
-			-- Function to toggle aimbot
-			local function toggleAimLock()
-				aimLockEnabled = not aimLockEnabled
-				if aimLockEnabled then
-					targetPlayer = getClosestPlayer()
-					UserInputService.MouseIconEnabled = true
-				else
-					targetPlayer = nil
-					UserInputService.MouseIconEnabled = defaultMouseIconEnabled  
-				end
+			return closestTarget
+		end
+
+		-- Function to toggle aimbot with FOV check
+		local function toggleAimLock()
+			aimLockEnabled = not aimLockEnabled
+			if aimLockEnabled then
+				targetPlayer = getClosestPlayer()
+				UserInputService.MouseIconEnabled = true
+			else
+				targetPlayer = nil
+				UserInputService.MouseIconEnabled = defaultMouseIconEnabled  
 			end
+		end
 
 			if Value == false then return
 			end 
@@ -515,4 +519,3 @@ KeyBinds:Keybind({
 
 
 --script.Parent.Parent:WaitForChild("savedkey").Value = tostring(KeyId)
-
