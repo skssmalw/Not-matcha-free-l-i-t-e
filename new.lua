@@ -384,23 +384,34 @@ local function toggleAimLock()
 end
 
 -- Keybind Activation
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == lockKey then
-        toggleAimLock()
-    end
-end)
-
--- Aimlock Execution
-RunService.RenderStepped:Connect(function()
-    if aimLockEnabled and targetPlayer then
-        local targetPart = targetPlayer.Character and targetPlayer.Character:FindFirstChild(aimpart)
-        if targetPart then
-            local targetPosition = targetPart.Position
-            local targetCFrame = CFrame.new(camera.CFrame.Position, targetPosition)
-            camera.CFrame = camera.CFrame:Lerp(targetCFrame, smoothFactor)
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.K then
+        AimLockEnabled = not AimLockEnabled
+        print("AimLockEnabled: " .. tostring(AimLockEnabled))  -- Debugging line
+        if AimLockEnabled then
+            LockedTarget = getClosestPlayer()
+            print("Locked Target: " .. tostring(LockedTarget))  -- Debugging line
+        else
+            LockedTarget = nil
         end
     end
 end)
+
+RunService.RenderStepped:Connect(function()
+    if AimLockEnabled and LockedTarget then
+        -- Debugging line
+        print("Tracking target...")
+
+        -- Predict movement by using velocity if available
+        local character = LockedTarget.Parent
+        if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Humanoid") then
+            local rootPart = character.HumanoidRootPart
+            local velocity = rootPart.Velocity * 0.1
+            local predictedPosition = rootPart.Position + velocity
+            Camera.CFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
+        end
+    end
 
 
 			-- Create mobile button
