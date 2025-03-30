@@ -231,11 +231,36 @@ end
 
 local General = CreateTab("General", 139650104834071)
 local Settings = CreateTab("Settings", ReGui.Icons.Settings)
-
+local LocalPlayer = CreateTab({Name=LOCAL CLIENT})
 --// General Tab
 local AimbotSection = CreateRegion(General, "Aimbot") 
 local ESPSection = CreateRegion(General, "ESP") 
+local ClientSection = CreateRegion(LocalPlayer, "Client")
 
+ClientSection:SliderFloat({
+    Label = "Speed", 
+    Minimum = 0.0, 
+    Maximum = 200,
+    Value = 16,
+    Format = "Ratio = %.3f",
+    Callback = function(self, Value)
+        local player = game:GetService("Players").LocalPlayer
+        
+        -- Ensure the player's character is loaded and has a humanoid
+        if player.Character then
+            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.WalkSpeed = Value -- Change the WalkSpeed to the slider value
+            end
+        end
+
+        -- Update WalkSpeed when the character respawns
+        player.CharacterAdded:Connect(function(character)
+            local humanoid = character:WaitForChild("Humanoid")
+            humanoid.WalkSpeed = Value
+        end)
+    end,
+})
 
 
 
