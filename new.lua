@@ -1,92 +1,86 @@
 local ReGui = loadstring(game:HttpGet('https://raw.githubusercontent.com/depthso/Dear-ReGui/refs/heads/main/ReGui.lua'))()
 local PrefabsId = rbxassetid://{ReGui.PrefabsId}
 local Smoothnessvalue = Instance.new("IntValue")
-
-
-
 Smoothnessvalue.Parent = game:GetService("Players").LocalPlayer
 Smoothnessvalue.Name = "VerySmoothSigma"
 local FovDesiredSized = Instance.new("IntValue")
 FovDesiredSized.Parent = game:GetService("Players").LocalPlayer
 FovDesiredSized.Name = "kfjskjfs"
-FovDesiredSized.Value = 120
 
 
-local player = game:GetService("Players").LocalPlayer
+local player = game.Players.LocalPlayer
 local espObjects = {} -- Table to hold the ESP parts (labels, boxes, etc.)
 local highlightObjects = {} -- Table to store Highlights for glow effect
 
 -- Function to update ESP with glow effect and wall hack ability
-local espObjects = {} 
-local highlightObjects = {} 
-
 local function updateESP(espEnabled)
-    -- Remove all existing ESP elements when disabled
-    if not espEnabled then
-        for _, espPart in ipairs(espObjects) do
-            espPart:Destroy()
-        end
-        espObjects = {}
+	-- Remove all existing ESP elements when disabled
+	if not espEnabled then
+		for _, espPart in ipairs(espObjects) do
+			espPart:Destroy()
+		end
+		espObjects = {} -- Clear the table
 
-        for _, highlight in ipairs(highlightObjects) do
-            highlight:Destroy()
-        end
-        highlightObjects = {}
+		for _, highlight in ipairs(highlightObjects) do
+			highlight:Destroy()
+		end
+		highlightObjects = {} -- Clear the table
 
-        return -- Exit early
-    end
+		return -- Exit early to prevent adding ESP elements when disabled
+	end
 
-    -- Loop through all players in the game and create/update ESP
-    for _, v in ipairs(game.Players:GetPlayers()) do
-        if v.Character and v.Character:FindFirstChild("Head") then
-            -- Create the BillboardGui for the ESP name label
-            local espPart = Instance.new("BillboardGui")
-            espPart.Adornee = v.Character:FindFirstChild("Head")
-            espPart.Parent = game:GetService("CoreGui") -- Prevents resetting on respawn
-            espPart.Size = UDim2.new(0, 100, 0, 50)
-            espPart.StudsOffset = Vector3.new(0, 2, 0)
-            espPart.AlwaysOnTop = true
+	-- Loop through all players in the game and create/update ESP
+	for _, v in ipairs(game.Players:GetPlayers()) do
+		if v.Character and v.Character:FindFirstChild("Head") then
+			-- Create the BillboardGui for the ESP name label
+			local espPart = Instance.new("BillboardGui")
+			espPart.Adornee = v.Character:FindFirstChild("Head")
+			espPart.Parent = player.PlayerGui
+			espPart.Size = UDim2.new(0, 100, 0, 50)
+			espPart.StudsOffset = Vector3.new(0, 2, 0)
+			espPart.AlwaysOnTop = true
 
-            local label = Instance.new("TextLabel")
-            label.Size = UDim2.new(1, 0, 1, 0)
-            label.Text = v.Name
-            label.TextColor3 = Color3.fromRGB(255, 255, 255)
-            label.BackgroundTransparency = 1
-            label.Font = Enum.Font.SourceSansBold
-            label.TextSize = 18
-            label.Parent = espPart
+			local label = Instance.new("TextLabel")
+			label.Size = UDim2.new(1, 0, 1, 0)
+			label.Text = v.Name
+			label.TextColor3 = Color3.fromRGB(255, 255, 255)
+			label.BackgroundTransparency = 1
+			label.Font = Enum.Font.SourceSansBold
+			label.TextSize = 18
+			label.Parent = espPart
 
-            -- Store ESP in table
-            table.insert(espObjects, espPart)
+			-- Create a highlight for the entire rig (all parts of the character)
+			for _, part in ipairs(v.Character:GetChildren()) do
+				if part:IsA("BasePart") then
+					local highlight = Instance.new("Highlight")
+					highlight.Parent = part
+					highlight.Adornee = part
+					highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Red glow effect
+					highlight.OutlineColor = Color3.fromRGB(0, 255, 0) -- Green outline effect
+					highlight.FillTransparency = 0.5
+					highlight.OutlineTransparency = 0.5
+					table.insert(highlightObjects, highlight)
+				end
+			end
 
-            -- Create a highlight for the entire character
-            for _, part in ipairs(v.Character:GetChildren()) do
-                if part:IsA("BasePart") then
-                    local highlight = Instance.new("Highlight")
-                    highlight.Parent = game.Workspace -- Store in Workspace so it persists
-                    highlight.Adornee = part
-                    highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Red glow effect
-                    highlight.OutlineColor = Color3.fromRGB(0, 255, 0) -- Green outline effect
-                    highlight.FillTransparency = 0.5
-                    highlight.OutlineTransparency = 0.5
-                    table.insert(highlightObjects, highlight)
-                end
-            end
+			-- Store the ESP part in the table
+			table.insert(espObjects, espPart)
 
-            -- Add a SurfaceGui to simulate wallhack (part visibility through walls)
-            local surfaceGui = Instance.new("SurfaceGui")
-            surfaceGui.Parent = v.Character:FindFirstChild("Head")
-            surfaceGui.Face = Enum.NormalId.Front
-            surfaceGui.AlwaysOnTop = true
+			-- Add a SurfaceGui to simulate wall hack (part visibility through walls)
+			local surfaceGui = Instance.new("SurfaceGui")
+			surfaceGui.Parent = v.Character:FindFirstChild("Head")
+			surfaceGui.Face = Enum.NormalId.Front
+			surfaceGui.AlwaysOnTop = true
 
-            local frame = Instance.new("Frame")
-            frame.Size = UDim2.new(1, 0, 1, 0)
-            frame.BackgroundTransparency = 0.5
-            frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            frame.Parent = surfaceGui
-        end
-    end
+			local frame = Instance.new("Frame")
+			frame.Size = UDim2.new(1, 0, 1, 0)
+			frame.BackgroundTransparency = 0.5
+			frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			frame.Parent = surfaceGui
+		end
+	end
 end
+
 
 
 
@@ -98,11 +92,9 @@ end
 local aimpartvalue = Instance.new("StringValue")
 aimpartvalue.Name = "AimPartValue"
 aimpartvalue.Parent = game:GetService("Players").LocalPlayer
-aimpartvalue.Value = "Head"
 local keybindvalue = Instance.new("StringValue")
 keybindvalue.Parent = game:GetService("Players").LocalPlayer
 keybindvalue.Name = "savedkey"
-keybindvalue.Value = "Enum.Keycode.Q"
 
 
 
@@ -146,7 +138,7 @@ local Window = ReGui:Window({
 	Size = UDim2.new(0, 600, 0, 400),
 }):Center()
 local ModalWindow = Window:PopupModal({
-	Title = "Loaded Obsidian L I T E ",
+	Title = "Loaded Not matcha L I T E ",
 	AutoSize = "Y"
 })
 
@@ -237,197 +229,167 @@ end
 
 local General = CreateTab("General", 139650104834071)
 local Settings = CreateTab("Settings", ReGui.Icons.Settings)
-local LocalPlayer = CreateTab("CLIENT")
+
 --// General Tab
 local AimbotSection = CreateRegion(General, "Aimbot") 
 local ESPSection = CreateRegion(General, "ESP") 
-local ClientSection = CreateRegion(LocalPlayer, "Client")
-
-ClientSection:SliderFloat({
-    Label = "Speed", 
-    Minimum = 0.0, 
-    Maximum = 200,
-    Value = 16,
-    Format = "Ratio = %.3f",
-    Callback = function(self, Value)
-        local player = game:GetService("Players").LocalPlayer
-        
-        -- Ensure the player's character is loaded and has a humanoid
-        if player.Character then
-            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                humanoid.WalkSpeed = Value -- Change the WalkSpeed to the slider value
-            end
-        end
-
-        -- Update WalkSpeed when the character respawns
-        player.CharacterAdded:Connect(function(character)
-            local humanoid = character:WaitForChild("Humanoid")
-            humanoid.WalkSpeed = Value
-        end)
-    end,
-}) 
 
 
 
 
 
-	AimbotSection:Checkbox({
-		Label = "Enabled",
-		Value = false,
-		Callback = function(self, Value)
-			-- Destroy UI when disabled
-			if Value == false then
+
+AimbotSection:Checkbox({
+	Label = "Enabled",
+	Value = false,
+	Callback = function(self, Value)
+		-- Destroy UI when disabled
+		if Value == false then
 			if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("verysigma") then 
 				game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("verysigma"):Destroy()
-				end
+			end
 			if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("dafo") then
 				game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("dafo"):Destroy()
-				end
-				return
 			end
+			return
+		end
 
 
-			-- Aimbot variable
-			local keyString = keybindvalue.Value
-			local keyName = keyString:match("Enum%.KeyCode%.(%w+)")
-		         if keyName and Enum.KeyCode[keyName] then
-                           local lockKey = Enum.KeyCode[keyName]
-				print(lockKey)
-                           else
-                     warn("Invalid keybind value:", keyString)
-                   end
-	
-			local aimpart = aimpartvalue.Value
-			print(aimpart)
-			local aimRadius = FovDesiredSized.Value
+		-- Aimbot variable
+		local keyString = keybindvalue.Value
+		local keyName = keyString:match("Enum%.KeyCode%.(%w+)") 
+		local lockKey = Enum.KeyCode[keyName]
+		print(lockKey)
+		local aimpart = aimpartvalue.Value
+		print(aimpart)
+		local aimRadius = FovDesiredSized.Value
 
-			local Players = game:GetService("Players")
-			local UserInputService = game:GetService("UserInputService")
-			local RunService = game:GetService("RunService")
+		local Players = game:GetService("Players")
+		local UserInputService = game:GetService("UserInputService")
+		local RunService = game:GetService("RunService")
 
-			local player = Players.LocalPlayer
-			local mouse = player:GetMouse()
-			local camera = workspace.CurrentCamera
-			local aimLockEnabled = false
-			local targetPlayer = nil
-			local defaultMouseIconEnabled = UserInputService.MouseIconEnabled
+		local player = Players.LocalPlayer
+		local mouse = player:GetMouse()
+		local camera = workspace.CurrentCamera
+		local aimLockEnabled = false
+		local targetPlayer = nil
+		local defaultMouseIconEnabled = UserInputService.MouseIconEnabled
 
-			-- Prevent multiple UI creations
-			if player:FindFirstChild("PlayerGui"):FindFirstChild("dafo") then
-				return
-			end
-	
-			-- Create UI
-			local ScreenGui = Instance.new("ScreenGui")
-			ScreenGui.Parent = player:WaitForChild("PlayerGui")
-			ScreenGui.ResetOnSpawn = true
-			ScreenGui.Name = "dafo"
-			ScreenGui.ResetOnSpawn = false
+		-- Prevent multiple UI creations
+		if player:FindFirstChild("PlayerGui"):FindFirstChild("dafo") then
+			return
+		end
 
-			local FOVCircle = Instance.new("Frame")
-			FOVCircle.Size = UDim2.new(0, aimRadius * 2, 0, aimRadius * 2)
-			FOVCircle.BackgroundTransparency = 1
-			FOVCircle.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+		-- Create UI
+		local ScreenGui = Instance.new("ScreenGui")
+		ScreenGui.Parent = player:WaitForChild("PlayerGui")
+		ScreenGui.ResetOnSpawn = true
+		ScreenGui.Name = "dafo"
+
+		local FOVCircle = Instance.new("Frame")
+		FOVCircle.Size = UDim2.new(0, aimRadius * 2, 0, aimRadius * 2)
+		FOVCircle.BackgroundTransparency = 1
+		FOVCircle.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+		FOVCircle.Position = UDim2.new(0, mouse.X - aimRadius, 0, mouse.Y - aimRadius)
+		FOVCircle.Parent = ScreenGui
+
+		local DAAK = Instance.new("UIStroke")
+		DAAK.Color = Color3.fromRGB(225, 225, 225)
+		DAAK.Parent = FOVCircle
+
+		local UICorner = Instance.new("UICorner")
+		UICorner.CornerRadius = UDim.new(1, 0)
+		UICorner.Parent = FOVCircle
+
+		RunService.RenderStepped:Connect(function()
 			FOVCircle.Position = UDim2.new(0, mouse.X - aimRadius, 0, mouse.Y - aimRadius)
-			FOVCircle.Parent = ScreenGui
+		end)
 
-			local DAAK = Instance.new("UIStroke")
-			DAAK.Color = Color3.fromRGB(225, 225, 225)
-			DAAK.Parent = FOVCircle
+		-- Function to get the closest player
+		local function getClosestPlayer()
+			local closestTarget = nil
+			local shortestDistance = aimRadius
 
-			local UICorner = Instance.new("UICorner")
-			UICorner.CornerRadius = UDim.new(1, 0)
-			UICorner.Parent = FOVCircle
+			for _, v in pairs(workspace:GetChildren()) do
+				if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v ~= player.Character then
+					local part = v:FindFirstChild(aimpart)
+					if part then
+						local screenPoint, onScreen = camera:WorldToViewportPoint(part.Position)
+						if onScreen then
+							local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(screenPoint.X, screenPoint.Y)).Magnitude
+							if distance < shortestDistance then
+								-- Check if the player is in the FOV (field of view)
+								local viewAngle = math.acos(camera.CFrame.LookVector:Dot((part.Position - camera.CFrame.Position).unit))
+								if math.deg(viewAngle) < 60 then  -- Adjust the FOV angle as needed (e.g., 60 degrees)
+									closestTarget = v
+									shortestDistance = distance
+								end
+							end
+						end
+					end
+				end
+			end
 
-			RunService.RenderStepped:Connect(function()
-				FOVCircle.Position = UDim2.new(0, mouse.X - aimRadius, 0, mouse.Y - aimRadius)
-			end)
+			return closestTarget
+		end
 
-			-- Function to get the closest player
-		local maxFOVAngle = 60 -- Maximum allowed FOV angle for locking
-
--- Function to find the closest valid player
-local function getClosestPlayer()
-    local closestTarget = nil
-    local shortestDistance = aimRadius
-
-    for _, v in pairs(Players:GetPlayers()) do
-        if v ~= player and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-            local part = v.Character:FindFirstChild(aimpart)
-            if part then
-                local screenPoint, onScreen = camera:WorldToViewportPoint(part.Position)
-                if onScreen then
-                    local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(screenPoint.X, screenPoint.Y)).Magnitude
-                    if distance < shortestDistance then
-                        -- Check if the player is in the FOV (field of view)
-                        local viewAngle = math.acos(camera.CFrame.LookVector:Dot((part.Position - camera.CFrame.Position).unit))
-                        if math.deg(viewAngle) < maxFOVAngle then
-                            closestTarget = v
-                            shortestDistance = distance
-                        end
-                    end
-                end
-            end
-        end
-    end
-    return closestTarget
-end
-
--- Function to toggle aimlock
-local function toggleAimLock()
-    aimLockEnabled = not aimLockEnabled
-    if aimLockEnabled then
-        targetPlayer = getClosestPlayer()
-        UserInputService.MouseIconEnabled = true
-    else
-        targetPlayer = nil
-        UserInputService.MouseIconEnabled = defaultMouseIconEnabled
-    end
-end
-
--- Keybind Activation
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == lockKey then
-        toggleAimLock()
-    end
-end)
-
--- Aimlock Execution
-RunService.RenderStepped:Connect(function()
-    if aimLockEnabled and targetPlayer then
-        local targetPart = targetPlayer.Character and targetPlayer.Character:FindFirstChild(aimpart)
-        if targetPart then
-            local targetPosition = targetPart.Position
-            local targetCFrame = CFrame.new(camera.CFrame.Position, targetPosition)
-            camera.CFrame = camera.CFrame:Lerp(targetCFrame, smoothFactor)
-        end
-    end
-end)
-
-
-			-- Create mobile button
-			if not player.PlayerGui:FindFirstChild("verysigma") then
-				local fsscreen = Instance.new("ScreenGui")
-				fsscreen.Parent = player:WaitForChild("PlayerGui")
-				fsscreen.Name = "verysigma"
-				fssscreen.ResetOnSpawn = false
-
-				local button = Instance.new("TextButton")
-				button.Size = UDim2.new(0, 100, 0, 50)
-				button.Position = UDim2.new(0.85, 0, 0.8, 0)
-				button.Text = "Aim Lock"
-				button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-				button.Parent = fsscreen
-
-				button.MouseButton1Click:Connect(function()
-					toggleAimLock()
-					button.BackgroundColor3 = aimLockEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
-				end)
+		-- Function to toggle aimbot with FOV check
+		local function toggleAimLock()
+			aimLockEnabled = not aimLockEnabled
+			if aimLockEnabled then
+				targetPlayer = getClosestPlayer()
+				UserInputService.MouseIconEnabled = true
+			else
+				targetPlayer = nil
+				UserInputService.MouseIconEnabled = defaultMouseIconEnabled  
 			end
 		end
-	})
-	
+
+		if Value == false then return
+		end 
+		UserInputService.InputBegan:Connect(function(input, gameProcessed)
+			if not gameProcessed and input.KeyCode == lockKey then
+				toggleAimLock()
+			end
+		end)
+
+
+		local smoothnessValue = Smoothnessvalue.Value
+		local smoothFactor = math.clamp(smoothnessValue / 100, 0.01, 1)
+
+		RunService.RenderStepped:Connect(function()
+			if aimLockEnabled and targetPlayer then
+				local targetPart = getClosestPlayer() and getClosestPlayer():FindFirstChild(aimpart)
+				if targetPart then
+					local targetPosition = targetPart.Position
+					local targetCFrame = CFrame.new(camera.CFrame.Position, targetPosition)
+					camera.CFrame = camera.CFrame:Lerp(targetCFrame, smoothFactor) 
+				end
+			end
+		end)
+
+
+		-- Create mobile button
+		if not player.PlayerGui:FindFirstChild("verysigma") then
+			local fsscreen = Instance.new("ScreenGui")
+			fsscreen.Parent = player:WaitForChild("PlayerGui")
+			fsscreen.Name = "verysigma"
+
+			local button = Instance.new("TextButton")
+			button.Size = UDim2.new(0, 100, 0, 50)
+			button.Position = UDim2.new(0.85, 0, 0.8, 0)
+			button.Text = "Aim Lock"
+			button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+			button.Parent = fsscreen
+
+			button.MouseButton1Click:Connect(function()
+				toggleAimLock()
+				button.BackgroundColor3 = aimLockEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+			end)
+		end
+	end
+})
+
 
 
 AimbotSection:Combo({
@@ -452,7 +414,7 @@ AimbotSection:Combo({
 		"LeftFoot",
 	},
 	Callback = function(self, Value)
-        aimpartvalue.Value = Value
+		aimpartvalue.Value = Value
 		print(Value)
 	end,
 })
@@ -561,106 +523,12 @@ local KeyBinds = ReGui:Window({
 
 KeyBinds:Separator({Text=""})
 KeyBinds:Keybind({
-		Label = "Lock bind",
-		Value = Enum.KeyCode.Q,
-		OnKeybindSet = function(self, KeyId)
+	Label = "Lock bind",
+	Value = Enum.KeyCode.Q,
+	OnKeybindSet = function(self, KeyId)
 		game:GetService("Players").LocalPlayer:WaitForChild("savedkey").Value = tostring(KeyId)
-		end
-	})
+	end
+})
 
 
 --script.Parent.Parent:WaitForChild("savedkey").Value = tostring(KeyId)
-
-
-ChatGPT said:
-Got it! To fix this, try checking your Flask app’s routing and how the /addtowhitelist command is linked to the user’s Discord ID. You may need to ensure the proper Discord ID gets passed and stored in the whitelist for the Roblox user.
-
-If the issue is that the Discord ID isn’t being recognized, you can also add a check to make sure the user is providing the correct format or that the ID matches a valid account. Let me know if you need a more detailed example or help with specific code debugging!
-
-
-2/2
-
-
-
-
-
-
-
-You said:
-this works that doesnt,<
-
-local UserInputService = game:GetService("UserInputService")
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
-local Camera = game.Workspace.CurrentCamera
-local StarterGui = game:GetService("StarterGui")
-
-local AimLockEnabled = false
-local LockedTarget = nil
-local AimFOV = 100 -- Field of View for targeting
-
--- Create FOV Circle UI
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = LocalPlayer:FindFirstChildOfClass("PlayerGui") or StarterGui
-
-local FOVCircle = Instance.new("Frame")
-FOVCircle.Size = UDim2.new(0, AimFOV * 2, 0, AimFOV * 2)
-FOVCircle.Position = UDim2.new(0.5, -AimFOV, 0.5, -AimFOV)
-FOVCircle.BackgroundTransparency = 0.5
-FOVCircle.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-FOVCircle.BorderSizePixel = 0
-FOVCircle.Parent = ScreenGui
-FOVCircle.Visible = true
-FOVCircle.ClipsDescendants = false
-FOVCircle.ZIndex = 10
-
-local function getClosestPlayer()
-    local closestPlayer = nil
-    local shortestDistance = math.huge
-    
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local targetPosition = player.Character.HumanoidRootPart.Position
-            local screenPoint, onScreen = Camera:WorldToViewportPoint(targetPosition)
-            local mousePosition = UserInputService:GetMouseLocation()
-            local distance = (Vector2.new(screenPoint.X, screenPoint.Y) - mousePosition).magnitude
-            
-            if onScreen and distance < AimFOV and distance < shortestDistance then
-                shortestDistance = distance
-                closestPlayer = player.Character.HumanoidRootPart
-            end
-        end
-    end
-    
-    return closestPlayer
-end
-
-UserInputService.InputBegan:Connect(function(input, processed)
-    if processed then return end
-    if input.KeyCode == Enum.KeyCode.K then
-        AimLockEnabled = not AimLockEnabled
-        if AimLockEnabled then
-            LockedTarget = getClosestPlayer()
-        else
-            LockedTarget = nil
-        end
-    end
-end)
-
-RunService.RenderStepped:Connect(function()
-    if AimLockEnabled and LockedTarget then
-        -- Predict movement by using velocity if available
-        local character = LockedTarget.Parent
-        if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Humanoid") then
-            local rootPart = character.HumanoidRootPart
-            local velocity = rootPart.Velocity * 0.1 -- Adjust prediction factor
-            local predictedPosition = rootPart.Position + velocity
-            Camera.CFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
-        end
-    end
-    
-    -- Update FOV circle position
-    local mousePosition = UserInputService:GetMouseLocation()
-    FOVCircle.Position = UDim2.new(0, mousePosition.X - AimFOV, 0, mousePosition.Y - AimFOV)
-end)
