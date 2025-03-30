@@ -3,6 +3,9 @@ local PrefabsId = `rbxassetid://{ReGui.PrefabsId}`
 local Smoothnessvalue = Instance.new("IntValue")
 Smoothnessvalue.Parent = game:GetService("Players").LocalPlayer
 Smoothnessvalue.Name = "VerySmoothSigma"
+local FovDesiredSized = Instance.new("IntValue")
+FovDesiredSized.Parent = game:GetService("Players").LocalPlayer
+FovDesiredSized.Name = "kfjskjfs"
 
 
 local player = game.Players.LocalPlayer
@@ -259,7 +262,7 @@ local ESPSection = CreateRegion(General, "ESP")
 			print(lockKey)
 			local aimpart = aimpartvalue.Value
 			print(aimpart)
-			local aimRadius = 130
+			local aimRadius = FovDesiredSized.Value
 
 			local Players = game:GetService("Players")
 			local UserInputService = game:GetService("UserInputService")
@@ -418,8 +421,8 @@ AimbotSection:Combo({
 
 AimbotSection:SliderFloat({
 	Label = "Smoothness",
-	Minimum = 100, 
-	Maximum = 1,
+	Minimum = 1, 
+	Maximum = 100,
 	Value = 50,
 	Format = "%.3f",
 	Callback = function(self, Value)
@@ -429,6 +432,16 @@ AimbotSection:SliderFloat({
 
 })
 
+AimbotSection:SliderFloat({
+	Label = "Fov size",
+	Minimum = 1,
+	Maximum = 1000,
+	Value = 130,
+	Format = "%.3f",
+	Callback = function(self, Value)
+		FovDesiredSized.Value = Value
+	end,
+})
 
 
 ESPSection:Checkbox({
