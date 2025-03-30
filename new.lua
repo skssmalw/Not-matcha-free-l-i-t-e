@@ -257,9 +257,14 @@ local ESPSection = CreateRegion(General, "ESP")
 
 			-- Aimbot variable
 			local keyString = keybindvalue.Value
-			local keyName = keyString:match("Enum%.KeyCode%.(%w+)") 
-		 local lockKey = Enum.KeyCode[keyName]
-			print(lockKey)
+			local keyName = keyString:match("Enum%.KeyCode%.(%w+)")
+		         if keyName and Enum.KeyCode[keyName] then
+                           local lockKey = Enum.KeyCode[keyName]
+				print(lockKey)
+                           else
+                     warn("Invalid keybind value:", keyString)
+                   end
+	
 			local aimpart = aimpartvalue.Value
 			print(aimpart)
 			local aimRadius = FovDesiredSized.Value
