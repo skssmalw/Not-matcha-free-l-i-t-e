@@ -13,74 +13,76 @@ local espObjects = {} -- Table to hold the ESP parts (labels, boxes, etc.)
 local highlightObjects = {} -- Table to store Highlights for glow effect
 
 -- Function to update ESP with glow effect and wall hack ability
+local espObjects = {} 
+local highlightObjects = {} 
+
 local function updateESP(espEnabled)
-	-- Remove all existing ESP elements when disabled
-	if not espEnabled then
-		for _, espPart in ipairs(espObjects) do
-			espPart:Destroy()
-		end
-		espObjects = {} -- Clear the table
+    -- Remove all existing ESP elements when disabled
+    if not espEnabled then
+        for _, espPart in ipairs(espObjects) do
+            espPart:Destroy()
+        end
+        espObjects = {}
 
-		for _, highlight in ipairs(highlightObjects) do
-			highlight:Destroy()
-		end
-		highlightObjects = {} -- Clear the table
+        for _, highlight in ipairs(highlightObjects) do
+            highlight:Destroy()
+        end
+        highlightObjects = {}
 
-		return -- Exit early to prevent adding ESP elements when disabled
-	end
+        return -- Exit early
+    end
 
-	-- Loop through all players in the game and create/update ESP
-	for _, v in ipairs(game.Players:GetPlayers()) do
-		if v.Character and v.Character:FindFirstChild("Head") then
-			-- Create the BillboardGui for the ESP name label
-			local espPart = Instance.new("BillboardGui")
-			espPart.Adornee = v.Character:FindFirstChild("Head")
-			espPart.Parent = player.PlayerGui
-			espPart.Size = UDim2.new(0, 100, 0, 50)
-			espPart.StudsOffset = Vector3.new(0, 2, 0)
-			espPart.AlwaysOnTop = true
+    -- Loop through all players in the game and create/update ESP
+    for _, v in ipairs(game.Players:GetPlayers()) do
+        if v.Character and v.Character:FindFirstChild("Head") then
+            -- Create the BillboardGui for the ESP name label
+            local espPart = Instance.new("BillboardGui")
+            espPart.Adornee = v.Character:FindFirstChild("Head")
+            espPart.Parent = game:GetService("CoreGui") -- Prevents resetting on respawn
+            espPart.Size = UDim2.new(0, 100, 0, 50)
+            espPart.StudsOffset = Vector3.new(0, 2, 0)
+            espPart.AlwaysOnTop = true
 
-			local label = Instance.new("TextLabel")
-			label.Size = UDim2.new(1, 0, 1, 0)
-			label.Text = v.Name
-			label.TextColor3 = Color3.fromRGB(255, 255, 255)
-			label.BackgroundTransparency = 1
-			label.Font = Enum.Font.SourceSansBold
-			label.TextSize = 18
-			label.Parent = espPart
+            local label = Instance.new("TextLabel")
+            label.Size = UDim2.new(1, 0, 1, 0)
+            label.Text = v.Name
+            label.TextColor3 = Color3.fromRGB(255, 255, 255)
+            label.BackgroundTransparency = 1
+            label.Font = Enum.Font.SourceSansBold
+            label.TextSize = 18
+            label.Parent = espPart
 
-			-- Create a highlight for the entire rig (all parts of the character)
-			for _, part in ipairs(v.Character:GetChildren()) do
-				if part:IsA("BasePart") then
-					local highlight = Instance.new("Highlight")
-					highlight.Parent = part
-					highlight.Adornee = part
-					highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Red glow effect
-					highlight.OutlineColor = Color3.fromRGB(0, 255, 0) -- Green outline effect
-					highlight.FillTransparency = 0.5
-					highlight.OutlineTransparency = 0.5
-					table.insert(highlightObjects, highlight)
-				end
-			end
+            -- Store ESP in table
+            table.insert(espObjects, espPart)
 
-			-- Store the ESP part in the table
-			table.insert(espObjects, espPart)
+            -- Create a highlight for the entire character
+            for _, part in ipairs(v.Character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    local highlight = Instance.new("Highlight")
+                    highlight.Parent = game.Workspace -- Store in Workspace so it persists
+                    highlight.Adornee = part
+                    highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Red glow effect
+                    highlight.OutlineColor = Color3.fromRGB(0, 255, 0) -- Green outline effect
+                    highlight.FillTransparency = 0.5
+                    highlight.OutlineTransparency = 0.5
+                    table.insert(highlightObjects, highlight)
+                end
+            end
 
-			-- Add a SurfaceGui to simulate wall hack (part visibility through walls)
-			local surfaceGui = Instance.new("SurfaceGui")
-			surfaceGui.Parent = v.Character:FindFirstChild("Head")
-			surfaceGui.Face = Enum.NormalId.Front
-			surfaceGui.AlwaysOnTop = true
+            -- Add a SurfaceGui to simulate wallhack (part visibility through walls)
+            local surfaceGui = Instance.new("SurfaceGui")
+            surfaceGui.Parent = v.Character:FindFirstChild("Head")
+            surfaceGui.Face = Enum.NormalId.Front
+            surfaceGui.AlwaysOnTop = true
 
-			local frame = Instance.new("Frame")
-			frame.Size = UDim2.new(1, 0, 1, 0)
-			frame.BackgroundTransparency = 0.5
-			frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			frame.Parent = surfaceGui
-		end
-	end
+            local frame = Instance.new("Frame")
+            frame.Size = UDim2.new(1, 0, 1, 0)
+            frame.BackgroundTransparency = 0.5
+            frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            frame.Parent = surfaceGui
+        end
+    end
 end
-
 
 
 
