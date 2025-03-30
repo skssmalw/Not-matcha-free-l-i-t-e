@@ -1,5 +1,5 @@
 local ReGui = loadstring(game:HttpGet('https://raw.githubusercontent.com/depthso/Dear-ReGui/refs/heads/main/ReGui.lua'))()
-local PrefabsId = `rbxassetid://{ReGui.PrefabsId}`
+local PrefabsId = rbxassetid://{ReGui.PrefabsId}
 local Smoothnessvalue = Instance.new("IntValue")
 
 
@@ -384,34 +384,23 @@ local function toggleAimLock()
 end
 
 -- Keybind Activation
-UserInputService.InputBegan:Connect(function(input, processed)
-    if processed then return end
-    if input.KeyCode == Enum.KeyCode.K then
-        AimLockEnabled = not AimLockEnabled
-        print("AimLockEnabled: " .. tostring(AimLockEnabled))  -- Debugging line
-        if AimLockEnabled then
-            LockedTarget = getClosestPlayer()
-            print("Locked Target: " .. tostring(LockedTarget))  -- Debugging line
-        else
-            LockedTarget = nil
-        end
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == lockKey then
+        toggleAimLock()
     end
 end)
 
+-- Aimlock Execution
 RunService.RenderStepped:Connect(function()
-    if AimLockEnabled and LockedTarget then
-        -- Debugging line
-        print("Tracking target...")
-
-        -- Predict movement by using velocity if available
-        local character = LockedTarget.Parent
-        if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Humanoid") then
-            local rootPart = character.HumanoidRootPart
-            local velocity = rootPart.Velocity * 0.1
-            local predictedPosition = rootPart.Position + velocity
-            Camera.CFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
+    if aimLockEnabled and targetPlayer then
+        local targetPart = targetPlayer.Character and targetPlayer.Character:FindFirstChild(aimpart)
+        if targetPart then
+            local targetPosition = targetPart.Position
+            local targetCFrame = CFrame.new(camera.CFrame.Position, targetPosition)
+            camera.CFrame = camera.CFrame:Lerp(targetCFrame, smoothFactor)
         end
     end
+end)
 
 
 			-- Create mobile button
@@ -578,3 +567,97 @@ KeyBinds:Keybind({
 
 
 --script.Parent.Parent:WaitForChild("savedkey").Value = tostring(KeyId)
+
+
+ChatGPT said:
+Got it! To fix this, try checking your Flask app’s routing and how the /addtowhitelist command is linked to the user’s Discord ID. You may need to ensure the proper Discord ID gets passed and stored in the whitelist for the Roblox user.
+
+If the issue is that the Discord ID isn’t being recognized, you can also add a check to make sure the user is providing the correct format or that the ID matches a valid account. Let me know if you need a more detailed example or help with specific code debugging!
+
+
+2/2
+
+
+
+
+
+
+
+You said:
+this works that doesnt,<
+
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = game.Workspace.CurrentCamera
+local StarterGui = game:GetService("StarterGui")
+
+local AimLockEnabled = false
+local LockedTarget = nil
+local AimFOV = 100 -- Field of View for targeting
+
+-- Create FOV Circle UI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = LocalPlayer:FindFirstChildOfClass("PlayerGui") or StarterGui
+
+local FOVCircle = Instance.new("Frame")
+FOVCircle.Size = UDim2.new(0, AimFOV * 2, 0, AimFOV * 2)
+FOVCircle.Position = UDim2.new(0.5, -AimFOV, 0.5, -AimFOV)
+FOVCircle.BackgroundTransparency = 0.5
+FOVCircle.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+FOVCircle.BorderSizePixel = 0
+FOVCircle.Parent = ScreenGui
+FOVCircle.Visible = true
+FOVCircle.ClipsDescendants = false
+FOVCircle.ZIndex = 10
+
+local function getClosestPlayer()
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local targetPosition = player.Character.HumanoidRootPart.Position
+            local screenPoint, onScreen = Camera:WorldToViewportPoint(targetPosition)
+            local mousePosition = UserInputService:GetMouseLocation()
+            local distance = (Vector2.new(screenPoint.X, screenPoint.Y) - mousePosition).magnitude
+            
+            if onScreen and distance < AimFOV and distance < shortestDistance then
+                shortestDistance = distance
+                closestPlayer = player.Character.HumanoidRootPart
+            end
+        end
+    end
+    
+    return closestPlayer
+end
+
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.K then
+        AimLockEnabled = not AimLockEnabled
+        if AimLockEnabled then
+            LockedTarget = getClosestPlayer()
+        else
+            LockedTarget = nil
+        end
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if AimLockEnabled and LockedTarget then
+        -- Predict movement by using velocity if available
+        local character = LockedTarget.Parent
+        if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Humanoid") then
+            local rootPart = character.HumanoidRootPart
+            local velocity = rootPart.Velocity * 0.1 -- Adjust prediction factor
+            local predictedPosition = rootPart.Position + velocity
+            Camera.CFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
+        end
+    end
+    
+    -- Update FOV circle position
+    local mousePosition = UserInputService:GetMouseLocation()
+    FOVCircle.Position = UDim2.new(0, mousePosition.X - AimFOV, 0, mousePosition.Y - AimFOV)
+end)
