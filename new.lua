@@ -231,7 +231,7 @@ end
 
 local General = CreateTab("General", 139650104834071)
 local Settings = CreateTab("Settings", ReGui.Icons.Settings)
-local LocalPlayer = CreateTab({Name=LOCAL CLIENT})
+local LocalPlayer = CreateTab({"LOCAL CLIENT"})
 --// General Tab
 local AimbotSection = CreateRegion(General, "Aimbot") 
 local ESPSection = CreateRegion(General, "ESP") 
@@ -260,7 +260,7 @@ ClientSection:SliderFloat({
             humanoid.WalkSpeed = Value
         end)
     end,
-})
+}) 
 
 
 
