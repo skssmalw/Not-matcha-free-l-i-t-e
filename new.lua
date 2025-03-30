@@ -290,6 +290,7 @@ local ESPSection = CreateRegion(General, "ESP")
 			ScreenGui.Parent = player:WaitForChild("PlayerGui")
 			ScreenGui.ResetOnSpawn = true
 			ScreenGui.Name = "dafo"
+			ScreenGui.ResetOnSpawn = false
 
 			local FOVCircle = Instance.new("Frame")
 			FOVCircle.Size = UDim2.new(0, aimRadius * 2, 0, aimRadius * 2)
@@ -377,6 +378,7 @@ end)
 				local fsscreen = Instance.new("ScreenGui")
 				fsscreen.Parent = player:WaitForChild("PlayerGui")
 				fsscreen.Name = "verysigma"
+				fssscreen.ResetOnSpawn = false
 
 				local button = Instance.new("TextButton")
 				button.Size = UDim2.new(0, 100, 0, 50)
