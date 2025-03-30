@@ -235,7 +235,7 @@ end
 
 local General = CreateTab("General", 139650104834071)
 local Settings = CreateTab("Settings", ReGui.Icons.Settings)
-local LocalPlayer = CreateTab("LOCAL CLIENT", 121666572155847)
+local LocalPlayer = CreateTab("CLIENT", 121666572155847)
 --// General Tab
 local AimbotSection = CreateRegion(General, "Aimbot") 
 local ESPSection = CreateRegion(General, "ESP") 
