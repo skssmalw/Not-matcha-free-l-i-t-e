@@ -1,5 +1,10 @@
 local ReGui = loadstring(game:HttpGet('https://raw.githubusercontent.com/depthso/Dear-ReGui/refs/heads/main/ReGui.lua'))()
-local PrefabsId = rbxassetid://{ReGui.PrefabsId}
+local PrefabsId = `rbxassetid://{ReGui.PrefabsId}`
+
+--// Externally import the Prefabs asset
+ReGui:Init({
+	Prefabs = game:GetService("InsertService"):LoadLocalAsset(PrefabsId)
+})
 local Smoothnessvalue = Instance.new("IntValue")
 Smoothnessvalue.Parent = game:GetService("Players").LocalPlayer
 Smoothnessvalue.Name = "VerySmoothSigma"
@@ -101,9 +106,6 @@ keybindvalue.Name = "savedkey"
 
 local RunService = game:GetService("RunService")
 
-ReGui:Init({
-	Prefabs = game:GetService("InsertService"):LoadLocalAsset(PrefabsId)
-})
 ReGui:DefineTheme("Cherry", {
 	TitleAlign = Enum.TextXAlignment.Center,
 	TextDisabled = Color3.fromRGB(120, 100, 120),
