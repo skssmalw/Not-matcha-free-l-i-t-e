@@ -11,7 +11,7 @@ FovDesiredSized.Parent = game:GetService("Players").LocalPlayer
 FovDesiredSized.Name = "kfjskjfs"
 
 
-local player = game.Players.LocalPlayer
+local player = game:GetService("Players").LocalPlayer
 local espObjects = {} -- Table to hold the ESP parts (labels, boxes, etc.)
 local highlightObjects = {} -- Table to store Highlights for glow effect
 
