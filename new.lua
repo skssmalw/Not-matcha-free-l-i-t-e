@@ -1,6 +1,14 @@
 local ReGui = loadstring(game:HttpGet('https://raw.githubusercontent.com/depthso/Dear-ReGui/refs/heads/main/ReGui.lua'))()
 local PrefabsId = `rbxassetid://{ReGui.PrefabsId}`
 local Smoothnessvalue = Instance.new("IntValue")
+local player = Players.LocalPlayer
+
+-- Fetch the thumbnail
+local userId = Game:GetService("Players").LocalPlayer.UserId
+local thumbType = Enum.ThumbnailType.HeadShot
+local thumbSize = Enum.ThumbnailSize.Size420x420
+local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+
 Smoothnessvalue.Parent = game:GetService("Players").LocalPlayer
 Smoothnessvalue.Name = "VerySmoothSigma"
 local FovDesiredSized = Instance.new("IntValue")
@@ -231,7 +239,7 @@ end
 
 local General = CreateTab("General", 139650104834071)
 local Settings = CreateTab("Settings", ReGui.Icons.Settings)
-local LocalPlayer = CreateTab({"LOCAL CLIENT"})
+local LocalPlayer = CreateTab({"LOCAL CLIENT", Content})
 --// General Tab
 local AimbotSection = CreateRegion(General, "Aimbot") 
 local ESPSection = CreateRegion(General, "ESP") 
