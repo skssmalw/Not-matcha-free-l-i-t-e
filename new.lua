@@ -306,67 +306,65 @@ local ESPSection = CreateRegion(General, "ESP")
 			end)
 
 			-- Function to get the closest player
-		local function getClosestPlayer()
-			local closestTarget = nil
-			local shortestDistance = aimRadius
+		local maxFOVAngle = 60 -- Maximum allowed FOV angle for locking
 
-			for _, v in pairs(workspace:GetChildren()) do
-				if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v ~= player.Character then
-					local part = v:FindFirstChild(aimpart)
-					if part then
-						local screenPoint, onScreen = camera:WorldToViewportPoint(part.Position)
-						if onScreen then
-							local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(screenPoint.X, screenPoint.Y)).Magnitude
-							if distance < shortestDistance then
-								-- Check if the player is in the FOV (field of view)
-								local viewAngle = math.acos(camera.CFrame.LookVector:Dot((part.Position - camera.CFrame.Position).unit))
-								if math.deg(viewAngle) < 60 then  -- Adjust the FOV angle as needed (e.g., 60 degrees)
-									closestTarget = v
-									shortestDistance = distance
-								end
-							end
-						end
-					end
-				end
-			end
+-- Function to find the closest valid player
+local function getClosestPlayer()
+    local closestTarget = nil
+    local shortestDistance = aimRadius
 
-			return closestTarget
-		end
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= player and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+            local part = v.Character:FindFirstChild(aimpart)
+            if part then
+                local screenPoint, onScreen = camera:WorldToViewportPoint(part.Position)
+                if onScreen then
+                    local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(screenPoint.X, screenPoint.Y)).Magnitude
+                    if distance < shortestDistance then
+                        -- Check if the player is in the FOV (field of view)
+                        local viewAngle = math.acos(camera.CFrame.LookVector:Dot((part.Position - camera.CFrame.Position).unit))
+                        if math.deg(viewAngle) < maxFOVAngle then
+                            closestTarget = v
+                            shortestDistance = distance
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return closestTarget
+end
 
-		-- Function to toggle aimbot with FOV check
-		local function toggleAimLock()
-			aimLockEnabled = not aimLockEnabled
-			if aimLockEnabled then
-				targetPlayer = getClosestPlayer()
-				UserInputService.MouseIconEnabled = true
-			else
-				targetPlayer = nil
-				UserInputService.MouseIconEnabled = defaultMouseIconEnabled  
-			end
-		end
+-- Function to toggle aimlock
+local function toggleAimLock()
+    aimLockEnabled = not aimLockEnabled
+    if aimLockEnabled then
+        targetPlayer = getClosestPlayer()
+        UserInputService.MouseIconEnabled = true
+    else
+        targetPlayer = nil
+        UserInputService.MouseIconEnabled = defaultMouseIconEnabled
+    end
+end
 
-			if Value == false then return
-			end 
-			UserInputService.InputBegan:Connect(function(input, gameProcessed)
-				if not gameProcessed and input.KeyCode == lockKey then
-					toggleAimLock()
-				end
-			end)
+-- Keybind Activation
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == lockKey then
+        toggleAimLock()
+    end
+end)
 
-		
-		local smoothnessValue = Smoothnessvalue.Value
-		local smoothFactor = math.clamp(smoothnessValue / 100, 0.01, 1)
-
-		RunService.RenderStepped:Connect(function()
-			if aimLockEnabled and targetPlayer then
-				local targetPart = getClosestPlayer() and getClosestPlayer():FindFirstChild(aimpart)
-				if targetPart then
-					local targetPosition = targetPart.Position
-					local targetCFrame = CFrame.new(camera.CFrame.Position, targetPosition)
-					camera.CFrame = camera.CFrame:Lerp(targetCFrame, smoothFactor) 
-				end
-			end
-		end)
+-- Aimlock Execution
+RunService.RenderStepped:Connect(function()
+    if aimLockEnabled and targetPlayer then
+        local targetPart = targetPlayer.Character and targetPlayer.Character:FindFirstChild(aimpart)
+        if targetPart then
+            local targetPosition = targetPart.Position
+            local targetCFrame = CFrame.new(camera.CFrame.Position, targetPosition)
+            camera.CFrame = camera.CFrame:Lerp(targetCFrame, smoothFactor)
+        end
+    end
+end)
 
 
 			-- Create mobile button
