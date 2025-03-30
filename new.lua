@@ -9,6 +9,7 @@ Smoothnessvalue.Name = "VerySmoothSigma"
 local FovDesiredSized = Instance.new("IntValue")
 FovDesiredSized.Parent = game:GetService("Players").LocalPlayer
 FovDesiredSized.Name = "kfjskjfs"
+FovDesiredSized.Value = 120
 
 
 local player = game:GetService("Players").LocalPlayer
@@ -97,9 +98,11 @@ end
 local aimpartvalue = Instance.new("StringValue")
 aimpartvalue.Name = "AimPartValue"
 aimpartvalue.Parent = game:GetService("Players").LocalPlayer
+aimpartvalue.Value = "Head"
 local keybindvalue = Instance.new("StringValue")
 keybindvalue.Parent = game:GetService("Players").LocalPlayer
 keybindvalue.Name = "savedkey"
+keybindvalue.Value = "Enum.Keycode.Q"
 
 
 
